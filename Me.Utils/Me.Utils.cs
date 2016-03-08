@@ -674,7 +674,7 @@ namespace Me.Utils
 
 namespace Me.Utils
 {
-    public static class MyError
+    public static class LocalizedError
     {
         public class MeException : Exception
         {
@@ -699,32 +699,32 @@ namespace Me.Utils
                 // Add implementation.
             }
 
-            private MeError.MeErrorCode _lessUACRunnerErrorCode;
-            private MeError.LessUACRunnerMessageCode _lessUACRunnerMessageCode;
+            private MeError.MeErrorCode _meErrorCode;
+            private MeError.LocalizedMessageCode _meMessageCode;
 
-            public MeError.MeErrorCode LessUACRunnerErrorCode
+            public MeError.MeErrorCode MeErrorCode
             {
                 get
                 {
-                    return this._lessUACRunnerErrorCode;
+                    return this._meErrorCode;
                 }
 
                 set
                 {
-                    this._lessUACRunnerErrorCode = value;
+                    this._meErrorCode = value;
                 }
             }
 
-            public MeError.LessUACRunnerMessageCode LessUACRunnerMessageCode
+            public MeError.LocalizedMessageCode MeMessageCode
             {
                 get
                 {
-                    return this._lessUACRunnerMessageCode;
+                    return this._meMessageCode;
                 }
 
                 set
                 {
-                    this._lessUACRunnerMessageCode = value;
+                    this._meMessageCode = value;
                 }
             }
 
@@ -733,69 +733,68 @@ namespace Me.Utils
         // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
         public static class MeError
         {
-            public static MeException CreateLessUACRunnerException(MeErrorCode code)
+            public static MeException CreateMeException(MeErrorCode code)
             {
-                Trace.TraceError("{0} Code: {1} MessageError: {2}", DateTime.Now, code, MyEnumExtender.GetLocalizedDescription(code));
-                return new MeException(MyEnumExtender.GetLocalizedDescription(code)) { LessUACRunnerErrorCode = code };
+                Trace.TraceError("{0} Code: {1} MessageError: {2}", DateTime.Now, code, LocalizedEnumExtender.GetLocalizedEnumDescription(code));
+                return new MeException(LocalizedEnumExtender.GetLocalizedEnumDescription(code)) { MeErrorCode = code };
             }
 
-            public static MeException CreateLessUACRunnerException(LessUACRunnerMessageCode code)
+            public static MeException CreateMeException(LocalizedMessageCode code)
             {
-                Trace.TraceInformation("{0} Code: {1} MessageInfo: {2}", DateTime.Now, code, MyEnumExtender.GetLocalizedDescription(code));
-                return new MeException(MyEnumExtender.GetLocalizedDescription(code)) { LessUACRunnerMessageCode = code };
+                Trace.TraceInformation("{0} Code: {1} MessageInfo: {2}", DateTime.Now, code, LocalizedEnumExtender.GetLocalizedEnumDescription(code));
+                return new MeException(LocalizedEnumExtender.GetLocalizedEnumDescription(code)) { MeMessageCode = code };
             }
 
             /// <summary>
             /// Example:
-            /// throw MeError.CreateLessUACRunnerException(MeError.LessUACRunnerErrorCode.ERROR_FileNotFound);
+            /// throw MeError.CreateMeException(MeError.MeErrorCode.ERROR_FileNotFound);
             /// </summary>
             public enum MeErrorCode
             {
-                [Description("fichier non trouvé")]
+                [Description("file not found")]
                 ERROR_FileNotFound = 10000,
-                [Description("fichier de configuration corrompu")]
+                [Description("file corrupted")]
                 ERROR_FileCorrupted,
             }
             /// <summary>
             /// Solution specifics messages and codes
             /// Examples:
-            /// throw MeError.CreateLessUACRunnerException(MeError.LessUACRunnerMessageCode.MESSAGE_Unauthorized);
-            /// return MeError.LessUACRunnerMessageCode.MESSAGE_Success;
-            /// [10162] Attributs localization in Common.Library.cs
+            /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
+            /// return MeError.MeMessageCode.MESSAGE_Success;
             /// </summary>
-            public enum LessUACRunnerMessageCode
+            public enum LocalizedMessageCode
             {
-                //[LocalizedEnum("MESSAGE_Success", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_Success", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_Success = 20000,
-                //[LocalizedEnum("MESSAGE_Unauthorized", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_Unauthorized", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_Unauthorized,
-                //[LocalizedEnum("MESSAGE_AlreadyStopped", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyStopped", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyStopped,
-                //[LocalizedEnum("MESSAGE_AlreadyStarted", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyStarted", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyStarted,
-                //[LocalizedEnum("MESSAGE_AlreadyInstalled", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyInstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyInstalled,
-                //[LocalizedEnum("MESSAGE_AlreadyUninstalled", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyUninstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyUninstalled,
-                //[LocalizedEnum("MESSAGE_AlreadyProtected", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyProtected", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyProtected,
-                //[LocalizedEnum("MESSAGE_AlreadyUnprotected", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_AlreadyUnprotected", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_AlreadyUnprotected,
-                //[LocalizedEnum("MESSAGE_KeyAlreadyExist", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_KeyAlreadyExist", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_KeyAlreadyExist,
-                //[LocalizedEnum("MESSAGE_KeyNotFind", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_KeyNotFind", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_KeyNotFind,
-                //[LocalizedEnum("MESSAGE_ListEmpty", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_ListEmpty", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_ListEmpty,
-                //[LocalizedEnum("MESSAGE_ServiceNotInstalled", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_ServiceNotInstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_ServiceNotInstalled,
-                //[LocalizedEnum("MESSAGE_NoReturnedData", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_NoReturnedData", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_NoReturnedData,
-                //[LocalizedEnum("MESSAGE_FileNotFound", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_FileNotFound", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_FileNotFound,
-                //[LocalizedEnum("MESSAGE_FileNotCrypted", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_FileNotCrypted", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_FileNotCrypted,
-                //[LocalizedEnum("MESSAGE_ServiceNotRunning", NameResourceType = typeof(Me.LessUACRunner.Common.Resources))]
+                //[LocalizedEnum("MESSAGE_ServiceNotRunning", NameResourceType = typeof(Me.Me.Common.Resources))]
                 //MESSAGE_ServiceNotRunning,
 
             }
@@ -864,12 +863,12 @@ namespace Me.Utils
     }
 
     /// <summary>
-    /// Attributs localization
+    /// Attributs localization extension method
     /// http://stackoverflow.com/questions/569298/localizing-enum-descriptions-attributes
     /// </summary>
-    public static class MyEnumExtender
+    public static class LocalizedEnumExtender
     {
-        public static string GetLocalizedDescription(this Enum @enum)
+        public static string GetLocalizedEnumDescription(this Enum @enum)
         {
             if (@enum == null)
                 return null;
@@ -884,6 +883,127 @@ namespace Me.Utils
 
             return description;
         }
+    }
+
+}
+
+namespace Me.Utils
+{
+    public static class MeError
+    {
+        public class MeException : Exception
+        {
+
+            public MeException()
+            {
+            }
+
+            public MeException(string message)
+                : base(message)
+            {
+            }
+
+            public MeException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+
+            // This constructor is needed for serialization.
+            protected MeException(SerializationInfo info, StreamingContext context)
+            {
+                // Add implementation.
+            }
+
+            private MeError.MeErrorCode _meErrorCode;
+            private MeError.MeMessageCode _meMessageCode;
+
+            public MeError.MeErrorCode MeErrorCode
+            {
+                get
+                {
+                    return this._meErrorCode;
+                }
+
+                set
+                {
+                    this._meErrorCode = value;
+                }
+            }
+
+            public MeError.MeMessageCode MeMessageCode
+            {
+                get
+                {
+                    return this._meMessageCode;
+                }
+
+                set
+                {
+                    this._meMessageCode = value;
+                }
+            }
+
+        }
+
+        // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
+        public static MeException CreateMeException(MeErrorCode code)
+        {
+            Trace.TraceError("{0} {1}:{2} MessageError: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
+            return new MeException(GetEnumDescription(code)) { MeErrorCode = code };
+        }
+
+        public static MeException CreateMeException(MeMessageCode code)
+        {
+            Trace.TraceInformation("{0} {1}:{2} MessageInfo: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
+            return new MeException(GetEnumDescription(code)) { MeMessageCode = code };
+        }
+
+        /// <summary>
+        /// Example:
+        /// throw MeError.CreateMeException(MeError.MeErrorCode.ERROR_FileNotFound);
+        /// </summary>
+        public enum MeErrorCode
+        {
+            [Description("File not found.")]
+            ERROR_FileNotFound = 10000,
+            [Description("File corrupted.")]
+            ERROR_FileCorrupted,
+        }
+
+        /// <summary>
+        /// Solution specifics messages and codes
+        /// Examples:
+        /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
+        /// return MeError.MeMessageCode.MESSAGE_Success;
+        /// </summary>
+        public enum MeMessageCode
+        {
+            [Description("Success.")]
+            MESSAGE_Success = 20000,
+
+        }
+
+        // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
+        public static string GetEnumDescription(Enum value)
+        {
+
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes != null && attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return value.ToString();
+
+        }
+
+        public static string PrintMessage(MeMessageCode code)
+        {
+            return string.Format("{0} {1}:{2} MessageInfo: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
+        }
+
     }
 
 }
