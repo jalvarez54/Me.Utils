@@ -18,6 +18,12 @@ using System.Runtime.Serialization;
 using System.Security.Principal;
 using System.Text;
 
+// <author>José ALVAREZ</author>
+// <date>16-03-11</date>
+// <description>My utilities</description>
+// <remarks>
+//    <date>16-03-11</date> <content> Creation </content>
+// </remarks>
 namespace Me.Utils
 {
     public static class MyString
@@ -450,7 +456,6 @@ namespace Me.Utils
 
     public static class MyCulture
     {
-
         public static string GetCulture()
         {
             return System.Threading.Thread.CurrentThread.CurrentCulture.ToString();
@@ -672,221 +677,12 @@ namespace Me.Utils
 
 }
 
-namespace Me.Utils
-{
-    public static class LocalizedError
-    {
-        public class MeException : Exception
-        {
-
-            public MeException()
-            {
-            }
-
-            public MeException(string message)
-                : base(message)
-            {
-            }
-
-            public MeException(string message, Exception inner)
-                : base(message, inner)
-            {
-            }
-
-            // This constructor is needed for serialization.
-            protected MeException(SerializationInfo info, StreamingContext context)
-            {
-                // Add implementation.
-            }
-
-            private MeError.MeErrorCode _meErrorCode;
-            private MeError.LocalizedMessageCode _meMessageCode;
-
-            public MeError.MeErrorCode MeErrorCode
-            {
-                get
-                {
-                    return this._meErrorCode;
-                }
-
-                set
-                {
-                    this._meErrorCode = value;
-                }
-            }
-
-            public MeError.LocalizedMessageCode MeMessageCode
-            {
-                get
-                {
-                    return this._meMessageCode;
-                }
-
-                set
-                {
-                    this._meMessageCode = value;
-                }
-            }
-
-        }
-
-        // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
-        public static class MeError
-        {
-            public static MeException CreateMeException(MeErrorCode code)
-            {
-                Trace.TraceError("{0} Code: {1} MessageError: {2}", DateTime.Now, code, LocalizedEnumExtender.GetLocalizedEnumDescription(code));
-                return new MeException(LocalizedEnumExtender.GetLocalizedEnumDescription(code)) { MeErrorCode = code };
-            }
-
-            public static MeException CreateMeException(LocalizedMessageCode code)
-            {
-                Trace.TraceInformation("{0} Code: {1} MessageInfo: {2}", DateTime.Now, code, LocalizedEnumExtender.GetLocalizedEnumDescription(code));
-                return new MeException(LocalizedEnumExtender.GetLocalizedEnumDescription(code)) { MeMessageCode = code };
-            }
-
-            /// <summary>
-            /// Example:
-            /// throw MeError.CreateMeException(MeError.MeErrorCode.ERROR_FileNotFound);
-            /// </summary>
-            public enum MeErrorCode
-            {
-                [Description("file not found")]
-                ERROR_FileNotFound = 10000,
-                [Description("file corrupted")]
-                ERROR_FileCorrupted,
-            }
-            /// <summary>
-            /// Solution specifics messages and codes
-            /// Examples:
-            /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
-            /// return MeError.MeMessageCode.MESSAGE_Success;
-            /// </summary>
-            public enum LocalizedMessageCode
-            {
-                //[LocalizedEnum("MESSAGE_Success", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_Success = 20000,
-                //[LocalizedEnum("MESSAGE_Unauthorized", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_Unauthorized,
-                //[LocalizedEnum("MESSAGE_AlreadyStopped", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyStopped,
-                //[LocalizedEnum("MESSAGE_AlreadyStarted", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyStarted,
-                //[LocalizedEnum("MESSAGE_AlreadyInstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyInstalled,
-                //[LocalizedEnum("MESSAGE_AlreadyUninstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyUninstalled,
-                //[LocalizedEnum("MESSAGE_AlreadyProtected", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyProtected,
-                //[LocalizedEnum("MESSAGE_AlreadyUnprotected", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_AlreadyUnprotected,
-                //[LocalizedEnum("MESSAGE_KeyAlreadyExist", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_KeyAlreadyExist,
-                //[LocalizedEnum("MESSAGE_KeyNotFind", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_KeyNotFind,
-                //[LocalizedEnum("MESSAGE_ListEmpty", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_ListEmpty,
-                //[LocalizedEnum("MESSAGE_ServiceNotInstalled", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_ServiceNotInstalled,
-                //[LocalizedEnum("MESSAGE_NoReturnedData", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_NoReturnedData,
-                //[LocalizedEnum("MESSAGE_FileNotFound", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_FileNotFound,
-                //[LocalizedEnum("MESSAGE_FileNotCrypted", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_FileNotCrypted,
-                //[LocalizedEnum("MESSAGE_ServiceNotRunning", NameResourceType = typeof(Me.Me.Common.Resources))]
-                //MESSAGE_ServiceNotRunning,
-
-            }
-            // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
-            [Obsolete]
-            public static string GetEnumDescription(Enum value)
-            {
-
-                FieldInfo fi = value.GetType().GetField(value.ToString());
-
-                DescriptionAttribute[] attributes =
-                    (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-                if (attributes != null && attributes.Length > 0)
-                    return attributes[0].Description;
-                else
-                    return value.ToString();
-
-            }
-
-            /// <summary>
-            /// [10162] Attributs localization in Common.Library.cs
-            /// </summary>
-            public class LocalizedEnumAttribute : DescriptionAttribute
-            {
-                private PropertyInfo _nameProperty;
-                private Type _resourceType;
-
-                public LocalizedEnumAttribute(string displayNameKey)
-                    : base(displayNameKey)
-                {
-
-                }
-
-                public Type NameResourceType
-                {
-                    get
-                    {
-                        return _resourceType;
-                    }
-                    set
-                    {
-                        _resourceType = value;
-
-                        _nameProperty = _resourceType.GetProperty(this.Description, BindingFlags.Static | BindingFlags.Public);
-                    }
-                }
-
-                public override string Description
-                {
-                    get
-                    {
-                        //check if nameProperty is null and return original display name value
-                        if (_nameProperty == null)
-                        {
-                            return base.Description;
-                        }
-
-                        return (string)_nameProperty.GetValue(_nameProperty.DeclaringType, null);
-                    }
-                }
-            }
-
-        }
-
-    }
-
-    /// <summary>
-    /// Attributs localization extension method
-    /// http://stackoverflow.com/questions/569298/localizing-enum-descriptions-attributes
-    /// </summary>
-    public static class LocalizedEnumExtender
-    {
-        public static string GetLocalizedEnumDescription(this Enum @enum)
-        {
-            if (@enum == null)
-                return null;
-
-            string description = @enum.ToString();
-
-            FieldInfo fieldInfo = @enum.GetType().GetField(description);
-            DescriptionAttribute[] attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-            if (attributes.Any())
-                return attributes[0].Description;
-
-            return description;
-        }
-    }
-
-}
-
+// <author>José ALVAREZ</author>
+// <date>16-03-11</date>
+// <description>Errors and messages management with localization</description>
+// <remarks>
+//    <date>16-03-11</date> <content> Creation </content>
+// </remarks>
 namespace Me.Utils
 {
     public static class MeError
@@ -983,6 +779,61 @@ namespace Me.Utils
 
         }
 
+        /// <summary>
+        /// Solution specifics messages and codes
+        /// Examples:
+        /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
+        /// return MeError.MeMessageCode.MESSAGE_Success;
+        /// </summary>
+        public enum LocalizedMessageCode
+        {
+            //[LocalizedEnum("MESSAGE_Success", NameResourceType = typeof(Me.Me.Common.Resources))]
+            //MESSAGE_Success = 20000,
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public class LocalizedEnumAttribute : DescriptionAttribute
+        {
+            private PropertyInfo _nameProperty;
+            private Type _resourceType;
+
+            public LocalizedEnumAttribute(string displayNameKey)
+                : base(displayNameKey)
+            {
+
+            }
+
+            public Type NameResourceType
+            {
+                get
+                {
+                    return _resourceType;
+                }
+                set
+                {
+                    _resourceType = value;
+
+                    _nameProperty = _resourceType.GetProperty(this.Description, BindingFlags.Static | BindingFlags.Public);
+                }
+            }
+
+            public override string Description
+            {
+                get
+                {
+                    //check if nameProperty is null and return original display name value
+                    if (_nameProperty == null)
+                    {
+                        return base.Description;
+                    }
+
+                    return (string)_nameProperty.GetValue(_nameProperty.DeclaringType, null);
+                }
+            }
+        }
+
         // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
         public static string GetEnumDescription(Enum value)
         {
@@ -1004,6 +855,29 @@ namespace Me.Utils
             return string.Format("{0} {1}:{2} MessageInfo: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
         }
 
+    }
+
+    /// <summary>
+    /// Attributs localization extension method
+    /// http://stackoverflow.com/questions/569298/localizing-enum-descriptions-attributes
+    /// </summary>
+    public static class LocalizedEnumExtender
+    {
+        public static string GetLocalizedEnumDescription(this Enum @enum)
+        {
+            if (@enum == null)
+                return null;
+
+            string description = @enum.ToString();
+
+            FieldInfo fieldInfo = @enum.GetType().GetField(description);
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes.Any())
+                return attributes[0].Description;
+
+            return description;
+        }
     }
 
 }
