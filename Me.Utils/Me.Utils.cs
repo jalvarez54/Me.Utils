@@ -1,4 +1,11 @@
-﻿#define NETFX_35 
+﻿
+/// <author>José ALVAREZ</author>
+/// <date>2016-02-28</date>
+/// <description>My CSHARP utilities</description>
+/// <remarks>
+///    <date>2016-02-28</date> <content> Creation </content>
+/// </remarks>
+#define NETFX_35
 #undef NETFX_40
 
 using Microsoft.Win32;
@@ -18,12 +25,12 @@ using System.Runtime.Serialization;
 using System.Security.Principal;
 using System.Text;
 
-// <author>José ALVAREZ</author>
-// <date>16-03-11</date>
-// <description>My utilities</description>
-// <remarks>
-//    <date>16-03-11</date> <content> Creation </content>
-// </remarks>
+/// <author>José ALVAREZ</author>
+/// <date>16-03-11</date>
+/// <description>My utilities</description>
+/// <remarks>
+///    <date>16-03-11</date> <content> Creation </content>
+/// </remarks>
 namespace Me.Utils
 {
     public static class MyString
@@ -677,12 +684,12 @@ namespace Me.Utils
 
 }
 
-// <author>José ALVAREZ</author>
-// <date>16-03-11</date>
-// <description>Errors and messages management with localization</description>
-// <remarks>
-//    <date>16-03-11</date> <content> Creation </content>
-// </remarks>
+/// <author>José ALVAREZ</author>
+/// <date>16-03-11</date>
+/// <description>Errors and messages management with localization</description>
+/// <remarks>
+///    <date>16-03-11</date> <content> Creation </content>
+/// </remarks>
 namespace Me.Utils
 {
     public static class MeError
@@ -881,3 +888,4 @@ namespace Me.Utils
     }
 
 }
+/// E.O.F: 2016-02-28 - José ALVAREZ - Me.Utils
