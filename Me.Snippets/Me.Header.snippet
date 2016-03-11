@@ -5,6 +5,7 @@
     <Header>
       <Title>Me.Header</Title>
       <Description>Header source file</Description>
+      <Author>JA</Author>
     </Header>
     <Snippet>
       <Declarations>
@@ -31,4 +32,47 @@
       </Code>
     </Snippet>
   </CodeSnippet>
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Me.HeaderFooter</Title>
+      <Description>Header and footer source file</Description>
+      <Author>JA</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        <SnippetType>SurroundsWith</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>Date</ID>
+          <ToolTip>Replace with date.</ToolTip>
+          <Default>MyDate</Default>
+        </Literal>
+        <Literal>
+          <ID>HeaderDescription</ID>
+          <ToolTip>Add header description your here.</ToolTip>
+          <Default>MyHedaerDescription</Default>
+        </Literal>
+        <Literal>
+          <ID>FooterrDescription</ID>
+          <ToolTip>Add footer description your here.</ToolTip>
+          <Default>MyFooterDescription</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="CSharp">
+        <![CDATA[
+        // <author>José ALVAREZ</author>
+        // <date>$Date$</date>
+        // <description>$HeaderDescription$</description>
+        // <remarks>
+        //    <date>$Date$</date> <content> Creation </content>
+        // </remarks>
+        $selected$
+        // $Date$ : José ALVAREZ : $FooterrDescription$
+        ]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+
 </CodeSnippets>
