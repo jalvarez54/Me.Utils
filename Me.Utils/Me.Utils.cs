@@ -33,7 +33,7 @@ using System.Text;
 /// </remarks>
 namespace Me.Utils
 {
-    public static class MyString
+    public static partial class MyString
     {
         public static string SwapChars(char[] chars)
         {
@@ -302,47 +302,6 @@ namespace Me.Utils
 
     }
 
-    public static class MyTrace
-    {
-        public static TraceSwitch MyTraceInit(string displayName, string description, string defaultSwitchValue)
-        {
-            TraceSwitch myTraceSwitch = null;
-
-            myTraceSwitch =
-                new TraceSwitch(displayName, description, defaultSwitchValue);
-            Trace.AutoFlush = true;
-
-            Trace.WriteLine("");
-            Trace.WriteLine("************************************************************************************************************");
-            Trace.WriteLine(DateTime.Now.ToString());
-            Trace.WriteLine("");
-            Trace.WriteLine("TraceSwitch.DisplayName: " + myTraceSwitch.DisplayName);
-            Trace.WriteLine("TraceSwitch.Description: " + myTraceSwitch.Description);
-            Trace.WriteLine("TraceSwitch.Level: " + myTraceSwitch.Level);
-            Trace.WriteLine("");
-
-            return myTraceSwitch;
-        }
-
-        public static void MyTraceBegin(TraceSwitch traceswitch, string sourceAssembly, string message = "")
-        {
-            Trace.WriteLineIf(traceswitch.TraceVerbose, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            Trace.WriteLineIf(traceswitch.TraceVerbose, string.Format("{0}: BEGIN BY {1} : {2}", DateTime.Now, sourceAssembly, message));
-        }
-
-        public static void MyTraceIf(TraceSwitch traceswitch, string sourceAssembly, string sourceMethod, string message)
-        {
-            Trace.WriteLineIf(traceswitch.TraceVerbose, string.Format("{0}: {1}-{2}(): {3}", DateTime.Now, sourceAssembly, sourceMethod, message));
-        }
-
-        public static void MyTraceEnd(TraceSwitch traceswitch, string sourceAssembly, string message = "")
-        {
-            Trace.WriteLineIf(traceswitch.TraceVerbose, string.Format("{0}: END BY {1} : {2}", DateTime.Now, sourceAssembly, message));
-            Trace.WriteLineIf(traceswitch.TraceVerbose, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
-        }
-
-    }
 
     public static class MyWmi
     {
@@ -684,191 +643,237 @@ namespace Me.Utils
 
 }
 
+#region Errors Exceptions Messages
 /// <author>José ALVAREZ</author>
 /// <date>16-03-11</date>
-/// <description>Errors and messages management with localization</description>
+/// <description>Errors, Exceptions and messages management with localization</description>
 /// <remarks>
 ///    <date>16-03-11</date> <content> Creation </content>
 /// </remarks>
 namespace Me.Utils
 {
-    public static class MeError
+
+    public static partial class MyString
     {
-        public class MeException : Exception
-        {
-
-            public MeException()
-            {
-            }
-
-            public MeException(string message)
-                : base(message)
-            {
-            }
-
-            public MeException(string message, Exception inner)
-                : base(message, inner)
-            {
-            }
-
-            // This constructor is needed for serialization.
-            protected MeException(SerializationInfo info, StreamingContext context)
-            {
-                // Add implementation.
-            }
-
-            private MeError.MeErrorCode _meErrorCode;
-            private MeError.MeMessageCode _meMessageCode;
-
-            public MeError.MeErrorCode MeErrorCode
-            {
-                get
-                {
-                    return this._meErrorCode;
-                }
-
-                set
-                {
-                    this._meErrorCode = value;
-                }
-            }
-
-            public MeError.MeMessageCode MeMessageCode
-            {
-                get
-                {
-                    return this._meMessageCode;
-                }
-
-                set
-                {
-                    this._meMessageCode = value;
-                }
-            }
-
-        }
-
-        // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
-        public static MeException CreateMeException(MeErrorCode code)
-        {
-            Trace.TraceError("{0} {1}:{2} MessageError: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
-            return new MeException(GetEnumDescription(code)) { MeErrorCode = code };
-        }
-
-        public static MeException CreateMeException(MeMessageCode code)
-        {
-            Trace.TraceInformation("{0} {1}:{2} MessageInfo: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
-            return new MeException(GetEnumDescription(code)) { MeMessageCode = code };
-        }
-
-        /// <summary>
-        /// Example:
-        /// throw MeError.CreateMeException(MeError.MeErrorCode.ERROR_FileNotFound);
-        /// </summary>
-        public enum MeErrorCode
-        {
-            [Description("File not found.")]
-            ERROR_FileNotFound = 10000,
-            [Description("File corrupted.")]
-            ERROR_FileCorrupted,
-        }
-
-        /// <summary>
-        /// Solution specifics messages and codes
-        /// Examples:
-        /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
-        /// return MeError.MeMessageCode.MESSAGE_Success;
-        /// </summary>
-        public enum MeMessageCode
-        {
-            [Description("Success.")]
-            MESSAGE_Success = 20000,
-
-        }
-
-        /// <summary>
-        /// Solution specifics messages and codes
-        /// Examples:
-        /// throw MeError.CreateMeException(MeError.MeMessageCode.MESSAGE_Unauthorized);
-        /// return MeError.MeMessageCode.MESSAGE_Success;
-        /// </summary>
-        public enum LocalizedMessageCode
-        {
-            //[LocalizedEnum("MESSAGE_Success", NameResourceType = typeof(Me.Me.Common.Resources))]
-            //MESSAGE_Success = 20000,
-        }
-
         /// <summary>
         /// 
         /// </summary>
-        public class LocalizedEnumAttribute : DescriptionAttribute
+        /// <param name="codeOrStringMessage">MeErrorCode or MeMessageCode or string type</param>
+        /// <returns></returns>
+        public static string GetFormatedMessage(object codeOrStringMessage, MethodBase methodBaseIfFromTrace = null)
         {
-            private PropertyInfo _nameProperty;
-            private Type _resourceType;
+            StackTrace stackTrace = new StackTrace();
+            StackFrame stackFrame = stackTrace.GetFrame(1);
 
-            public LocalizedEnumAttribute(string displayNameKey)
-                : base(displayNameKey)
+            MethodBase methodBase = methodBaseIfFromTrace == null ? stackFrame.GetMethod() : methodBaseIfFromTrace;
+            string mes = "";
+
+            if (codeOrStringMessage == null)
             {
-
+                mes = string.Format("{0}: {1}[{2}]", DateTime.Now, methodBase.Module.Name, methodBase.Name);
+                return mes;
             }
-
-            public Type NameResourceType
-            {
-                get
-                {
-                    return _resourceType;
-                }
-                set
-                {
-                    _resourceType = value;
-
-                    _nameProperty = _resourceType.GetProperty(this.Description, BindingFlags.Static | BindingFlags.Public);
-                }
-            }
-
-            public override string Description
-            {
-                get
-                {
-                    //check if nameProperty is null and return original display name value
-                    if (_nameProperty == null)
-                    {
-                        return base.Description;
-                    }
-
-                    return (string)_nameProperty.GetValue(_nameProperty.DeclaringType, null);
-                }
-            }
-        }
-
-        // http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
-        public static string GetEnumDescription(Enum value)
-        {
-
-            FieldInfo fi = value.GetType().GetField(value.ToString());
-
-            DescriptionAttribute[] attributes =
-                (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-            if (attributes != null && attributes.Length > 0)
-                return attributes[0].Description;
             else
-                return value.ToString();
+            {
+                mes = string.Format("{0}: {1}[{2}] > Message:\"{3}\"", DateTime.Now, methodBase.Module.Name, methodBase.Name, codeOrStringMessage.ToString());
+            }
 
-        }
 
-        public static string PrintMessage(MeMessageCode code)
-        {
-            return string.Format("{0} {1}:{2} MessageInfo: \"{3}\"", DateTime.Now, code, (int)code, GetEnumDescription(code));
+            if (codeOrStringMessage.GetType() == typeof(MeCode))
+            {
+                MeCode e = (MeCode)codeOrStringMessage;
+                mes = string.Format("{0}: {1}[{2}] > {3}:{4} > Message:\"{5}.\"", DateTime.Now, methodBase.Module.Name, methodBase.Name, (int)e, e, e.GetLocalizedEnumDescription());
+            }
+
+            if (codeOrStringMessage.GetType() == typeof(string))
+            {
+                string e = (string)codeOrStringMessage;
+                mes = string.Format("{0}: {1}[{2}] > Message:\"{3}\"", DateTime.Now, methodBase.Module.Name, methodBase.Name, e);
+            }
+            return mes;
         }
 
     }
+
+    public static class MyTrace
+    {
+        public static TraceSwitch MyTraceInit(string displayName, string description, string defaultSwitchValue)
+        {
+
+            TraceSwitch myTraceSwitch = null;
+
+            myTraceSwitch =
+                new TraceSwitch(displayName, description, defaultSwitchValue);
+            Trace.AutoFlush = true;
+
+            Trace.WriteLine("");
+            Trace.WriteLine("************************************************************************************************************");
+            Trace.WriteLine(DateTime.Now.ToString());
+            Trace.WriteLine("");
+            Trace.WriteLine("TraceSwitch.DisplayName: " + myTraceSwitch.DisplayName);
+            Trace.WriteLine("TraceSwitch.Description: " + myTraceSwitch.Description);
+            Trace.WriteLine("TraceSwitch.Level: " + myTraceSwitch.Level);
+            Trace.WriteLine("");
+
+            return myTraceSwitch;
+        }
+
+        public static void MyTraceBegin(TraceSwitch traceswitch, string message = "")
+        {
+            StackTrace stackTrace = new StackTrace();
+            StackFrame stackFrame = stackTrace.GetFrame(1);
+            MethodBase methodBase = stackFrame.GetMethod();
+
+            Trace.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            Trace.WriteLine(string.Format("{0}: BEGIN BY {1}[{2}] : {3}", DateTime.Now, methodBase.Module.Name, methodBase.Name, message));
+        }
+
+        public static void MyTraceIf(TraceSwitch traceswitch, object codeOrStringMessage = null, bool isDebug = true)
+        {
+            StackTrace stackTrace = new StackTrace();
+            StackFrame stackFrame = stackTrace.GetFrame(1);
+            MethodBase methodBase = stackFrame.GetMethod();
+
+            if (isDebug)
+            {
+                Debug.WriteLine(MyString.GetFormatedMessage(codeOrStringMessage, methodBase));
+            }
+            else
+            {
+                Trace.WriteLineIf(traceswitch.TraceVerbose, MyString.GetFormatedMessage(codeOrStringMessage, methodBase));
+            }
+        }
+
+
+        public static void MyTraceEnd(TraceSwitch traceswitch, string message = "")
+        {
+            StackTrace stackTrace = new StackTrace();
+            StackFrame stackFrame = stackTrace.GetFrame(1);
+            MethodBase methodBase = stackFrame.GetMethod();
+
+            Trace.WriteLine(string.Format("{0}: END BY {1}[{2}] : {3}", DateTime.Now, methodBase.Module.Name, methodBase.Name, message));
+            Trace.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+        }
+
+    }
+
+
+    public class MeException : Exception
+    {
+
+        public MeException()
+        {
+        }
+
+        public MeException(string message)
+            : base(message)
+        {
+        }
+
+        public MeException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+
+        // This constructor is needed for serialization.
+        protected MeException(SerializationInfo info, StreamingContext context)
+        {
+            // Add implementation.
+        }
+
+        private MeCode _meErrorCode;
+
+        public MeCode MeErrorCode
+        {
+            get
+            {
+                return this._meErrorCode;
+            }
+
+            set
+            {
+                this._meErrorCode = value;
+            }
+        }
+
+
+        /// http://stackoverflow.com/questions/569298/localizing-enum-descriptions-attributes
+        /// http://blog.spontaneouspublicity.com/associating-strings-with-enums-in-c
+        public static MeException MeNewException(Me.Utils.MeCode code)
+        {
+            return new Me.Utils.MeException(code.GetLocalizedEnumDescription()) { MeErrorCode = code };
+        }
+
+
+    }
+
+    /// <summary>
+    /// Example:
+    /// throw MeError.CreateMeException(MeError.MeErrorCode.ERROR_FileNotFound);
+    /// </summary>
+    public enum MeCode
+    {
+        [LocalizedEnum("ERROR_Success", NameResourceType = typeof(Me.Utils.Resources))]
+        ERROR_Success = 20000,
+        [LocalizedEnum("ERROR_Unauthorized", NameResourceType = typeof(Me.Utils.Resources))]
+        ERROR_Unauthorized,
+        [LocalizedEnum("ERROR_AlreadyStopped", NameResourceType = typeof(Me.Utils.Resources))]
+        ERROR_AlreadyStopped,
+        [LocalizedEnum("ERROR_FileNotFound", NameResourceType = typeof(Me.Utils.Resources))]
+        ERROR_FileNotFound,
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class LocalizedEnumAttribute : DescriptionAttribute
+    {
+        private PropertyInfo _nameProperty;
+        private Type _resourceType;
+
+        public LocalizedEnumAttribute(string displayNameKey)
+            : base(displayNameKey)
+        {
+
+        }
+
+        public Type NameResourceType
+        {
+            get
+            {
+                return _resourceType;
+            }
+            set
+            {
+                _resourceType = value;
+
+                _nameProperty = _resourceType.GetProperty(this.Description, BindingFlags.Static | BindingFlags.Public);
+            }
+        }
+
+        public override string Description
+        {
+            get
+            {
+                //check if nameProperty is null and return original display name value
+                if (_nameProperty == null)
+                {
+                    return base.Description;
+                }
+
+                return (string)_nameProperty.GetValue(_nameProperty.DeclaringType, null);
+            }
+        }
+    }
+
 
     /// <summary>
     /// Attributs localization extension method
     /// http://stackoverflow.com/questions/569298/localizing-enum-descriptions-attributes
     /// </summary>
-    public static class LocalizedEnumExtender
+    public static class MeEnumExtender
     {
         public static string GetLocalizedEnumDescription(this Enum @enum)
         {
@@ -876,7 +881,7 @@ namespace Me.Utils
                 return null;
 
             string description = @enum.ToString();
-
+            Type t = @enum.GetType();
             FieldInfo fieldInfo = @enum.GetType().GetField(description);
             DescriptionAttribute[] attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
@@ -885,7 +890,10 @@ namespace Me.Utils
 
             return description;
         }
+
     }
 
 }
+
+#endregion
 /// E.O.F: 2016-02-28 - José ALVAREZ - Me.Utils
